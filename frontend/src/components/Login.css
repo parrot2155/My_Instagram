@@ -1,0 +1,132 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #fafafa;
+  padding: 20px;
+}
+
+.login-form {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  border: 1px solid #dbdbdb;
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.logo {
+  margin-bottom: 30px;
+}
+
+.logo h1 {
+  font-family: "Billabong", cursive;
+  font-size: 36px;
+  margin: 0;
+  color: #333;
+  cursor: pointer;
+}
+
+.error-message {
+  color: #ed4956;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: #fafafa;
+  color: #333;
+}
+
+.input-group input::placeholder {
+  color: #8e8e8e;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #b3b3b3;
+}
+
+.check-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 6px 12px;
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.check-button:hover {
+  background-color: #007bc7;
+}
+
+.check-button:disabled {
+  background-color: #b3b3b3;
+  cursor: not-allowed;
+}
+
+.success-message {
+  color: #52c41a;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.login-button {
+  width: 100%;
+  padding: 8px;
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.login-button:hover {
+  background-color: #007bc7;
+}
+
+.login-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #8e8e8e;
+}
+
+.login-links a {
+  color: #0095f6;
+  text-decoration: none;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
+.login-links span {
+  color: #dbdbdb;
+}
