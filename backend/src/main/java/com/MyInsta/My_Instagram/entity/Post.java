@@ -6,7 +6,10 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.Date;
 
@@ -20,6 +23,10 @@ public class Post {
     @Id
     @Column(name = "POST_ID")
     private Long postId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_NO", insertable = false, updatable = false)
+    private User user;
 
     @Column(name = "USER_NO")
     private Long userNo;

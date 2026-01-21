@@ -16,7 +16,7 @@ const Feed = () => {
         // Map backend fields to front-end expected shape
         const mapped = data.map((p) => ({
           id: p.postId,
-          username: p.userNo ? `user${p.userNo}` : "unknown",
+          username: p.user?.nickname || p.user?.username || `user${p.userNo}`,
           image: p.imageUrl || p.image_url || "https://via.placeholder.com/400x400",
           likes: p.likeCount || p.like_count || 0,
           caption: p.content || "",

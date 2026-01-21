@@ -22,6 +22,6 @@ public class PostController {
 
     @GetMapping("/posts")
     public List<Post> getPosts() {
-        return postRepository.findAll();
+        return postRepository.findAllWithUser();
     }
 }
