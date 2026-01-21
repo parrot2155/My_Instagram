@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaHome, FaPaperPlane, FaSearch, FaCompass, FaPlay, FaHeart, FaPlusSquare, FaUser, FaCog } from "react-icons/fa";
 import "./Sidebar.css";
+import CreatePostModal from "./CreatePostModal";
 
 const Sidebar = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="sidebar">
       <div className="sidebar__logo">
@@ -33,7 +36,7 @@ const Sidebar = () => {
           <FaHeart className="nav-icon" />
           <span>알림</span>
         </div>
-        <div className="nav-item">
+        <div className="nav-item" onClick={() => setIsModalOpen(true)}>
           <FaPlusSquare className="nav-icon" />
           <span>만들기</span>
         </div>
@@ -48,6 +51,8 @@ const Sidebar = () => {
           <span>설정</span>
         </div>
       </div>
+
+      <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

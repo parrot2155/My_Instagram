@@ -17,7 +17,7 @@ const Feed = () => {
         const mapped = data.map((p) => ({
           id: p.postId,
           username: p.user?.nickname || p.user?.username || `user${p.userNo}`,
-          image: p.imageUrl || p.image_url || "https://via.placeholder.com/400x400",
+          image: p.imageUrl ? `http://localhost:8090${p.imageUrl}` : "https://via.placeholder.com/400x400",
           likes: p.likeCount || p.like_count || 0,
           caption: p.content || "",
         }));

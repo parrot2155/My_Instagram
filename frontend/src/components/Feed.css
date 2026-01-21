@@ -61,4 +61,8 @@
 .post__caption {
   padding: 0 10px 10px;
   color: #222;
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }

@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>십이장기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&display=swap" rel="stylesheet" />
+
+    <style>
+      body {
+        font-family: "Noto Serif KR", serif;
+        -webkit-tap-highlight-color: transparent;
+        background-color: #f0e6d2; /* 배경 */
+        overscroll-behavior: none;
+        overflow: hidden;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      html {
+        width: 100%;
+        height: 100%;
+      }
+
+      /* 보드 스타일 */
+      .wood-board {
+        background-color: #eecfa1;
+        border: 8px solid #6b4c35;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
+
+      /* 장기말 스타일 (수정됨) */
+      .janggi-piece {
+        width: 90%;
+        height: 90%;
+        border-radius: 8px;
+        background-color: #fff8e1;
+        border: 3px solid #5d4037;
+        box-shadow: 0 4px 0 #3e2723, 0 5px 5px rgba(0, 0, 0, 0.2);
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        position: relative;
+        transition: transform 0.1s;
+        z-index: 10;
+      }
+
+      .janggi-piece:active {
+        transform: translateY(4px); /* 눌림 효과 */
+        box-shadow: 0 0 0 #3e2723;
+      }
+
+      /* 플레이어 색상 */
+      .player-cho {
+        color: #00695c;
+      } /* 초록 */
+      .player-han {
+        color: #c62828;
+      } /* 빨강 */
+
+      /* 회전 (Tailwind rotate-180과 충돌 방지) */
+      .janggi-piece.rotate-180 {
+        transform: rotate(180deg);
+      }
+
+      .selected .janggi-piece.rotate-180 {
+        transform: rotate(180deg) translateY(-3px);
+      }
+
+      /* 선택 효과 */
+      .selected {
+        background-color: rgba(255, 245, 157, 0.5) !important;
+        border-radius: 8px;
+      }
+
+      .selected .janggi-piece {
+        background-color: #fff9c4; /* 선택 시 밝은 노란색 배경 */
+        border-color: #fbc02d;
+        box-shadow: 0 4px 0 #f57f17, 0 6px 10px rgba(245, 127, 23, 0.4);
+        transform: translateY(-3px);
+      }
+
+      .selected .janggi-piece:not(.rotate-180) {
+        transform: translateY(-3px);
+      }
+
+      /* 이동 가능 표시 (보드 바닥에 점) */
+      .valid-move::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        background: radial-gradient(circle, rgba(76, 175, 80, 0.7) 0%, rgba(76, 175, 80, 0.2) 100%);
+        border-radius: 50%;
+        border: 2px solid rgba(76, 175, 80, 0.5);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+        animation: pulse-move 1.5s ease-in-out infinite;
+      }
+
+      @keyframes pulse-move {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.3);
+        }
+      }
+
+      /* 이동 방향 가이드 (작은 점/화살표) */
+      .move-indicator {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background-color: currentColor; /* 폰트 색상 따라감 */
+        opacity: 0.85;
+        box-shadow: 0 0 2px currentColor;
+        z-index: 15;
+      }
+
+      /* 위치별 인디케이터 좌표 */
+      .pos-nw {
+        top: 15%;
+        left: 15%;
+      }
+      .pos-n {
+        top: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .pos-ne {
+        top: 15%;
+        right: 15%;
+      }
+      .pos-w {
+        top: 50%;
+        left: 8%;
+        transform: translateY(-50%);
+      }
+      .pos-e {
+        top: 50%;
+        right: 8%;
+        transform: translateY(-50%);
+      }
+      .pos-sw {
+        bottom: 15%;
+        left: 15%;
+      }
+      .pos-s {
+        bottom: 8%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .pos-se {
+        bottom: 15%;
+        right: 15%;
+      }
+
+      /* 격자 선 */
+      #gameBoard {
+        background-image: linear-gradient(90deg, #9d8b84 1px, transparent 1px), linear-gradient(#9d8b84 1px, transparent 1px);
+        background-size: calc(100% / 3) calc(100% / 4);
+        background-position: 0 0;
+      }
+
+      /* 게임보드 셀 경계 */
+      #gameBoard > div {
+        border: none;
+      }
+
+      /* 진영 표시 배경색 */
+      #gameBoard > div:nth-child(1),
+      #gameBoard > div:nth-child(2),
+      #gameBoard > div:nth-child(3) {
+        background-color: rgba(198, 40, 40, 0.08); /* 빨간색 진영 */
+      }
+
+      #gameBoard > div:nth-child(10),
+      #gameBoard > div:nth-child(11),
+      #gameBoard > div:nth-child(12) {
+        background-color: rgba(0, 105, 92, 0.08); /* 초록색 진영 */
+      }
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen overflow-hidden select-none text-stone-800">
+    <div id="audio-container"></div>
+
+    <div id="mainMenu" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#f0e6d2]">
+      <div class="border-4 border-stone-700 p-8 rounded-xl bg-[#fff8e1] shadow-xl text-center max-w-sm w-full mx-4">
+        <div class="mb-6 flex justify-center">
+          <div class="w-20 h-20 bg-white border-4 border-stone-800 rounded-lg flex items-center justify-center shadow-lg">
+            <span class="text-5xl font-black text-[#c62828]">王</span>
+          </div>
+        </div>
+        <h1 class="text-4xl font-black text-stone-800 mb-2">十 二 將 棋</h1>
+        <p class="text-stone-500 mb-8 font-serif">12개의 조각, 치열한 전략</p>
+
+        <div class="space-y-3 w-full">
+          <button onclick="startGame()" class="w-full bg-stone-700 hover:bg-stone-800 text-white text-lg py-3 rounded font-bold transition-transform active:scale-95 shadow-md">대국 시작</button>
+          <button onclick="showHowToPlay()" class="w-full bg-[#d7ccc8] hover:bg-[#bcaaa4] text-stone-800 py-3 rounded font-bold border border-stone-400">규칙 설명</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="gameScreen" class="hidden flex-1 flex flex-col h-full relative">
+      <div class="flex justify-between items-center p-3 bg-[#e8e0d0] border-b border-[#bcaaa4] shadow-sm z-20">
+        <button onclick="showConfirmHomeModal()" class="w-10 h-10 flex items-center justify-center text-stone-600 hover:text-red-600 text-xl">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <h2 class="text-lg font-bold text-stone-700">십이장기</h2>
+        <button onclick="resetGame()" class="w-10 h-10 flex items-center justify-center text-stone-600 hover:text-stone-900">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 flex flex-col lg:flex-row items-center justify-center gap-2 sm:gap-4 p-2 sm:p-4 w-full">
+        <div id="p2-area" class="w-full lg:w-56 bg-[#efebe9] rounded-lg p-2 sm:p-3 shadow border-2 border-[#d7ccc8] transition-all duration-300">
+          <div class="flex justify-between items-center mb-2 pb-1 border-b border-[#d7ccc8]">
+            <span class="font-bold text-[#c62828] text-sm sm:text-base">漢 (Player 2)</span>
+            <span id="status2" class="text-xs text-stone-400">대기</span>
+          </div>
+          <div class="bg-[#d7ccc8] rounded p-2 min-h-[50px] sm:min-h-[60px] max-h-[100px] overflow-y-auto flex gap-2 flex-wrap justify-center" id="player2Captured"></div>
+        </div>
+
+        <div class="relative flex-shrink-0">
+          <div class="wood-board p-2 sm:p-4 rounded-lg shadow-2xl relative" style="aspect-ratio: 3/4; width: clamp(280px, 85vw, 420px)">
+            <div id="gameBoard" class="grid grid-cols-3 grid-rows-4 w-full h-full relative z-10 gap-0"></div>
+          </div>
+        </div>
+
+        <div id="p1-area" class="w-full lg:w-56 bg-[#efebe9] rounded-lg p-2 sm:p-3 shadow border-2 border-[#d7ccc8] transition-all duration-300">
+          <div class="flex justify-between items-center mb-2 pb-1 border-b border-[#d7ccc8]">
+            <span class="font-bold text-[#00695c] text-sm sm:text-base">楚 (Player 1)</span>
+            <span id="status1" class="text-xs text-stone-400">대기</span>
+          </div>
+          <div class="bg-[#d7ccc8] rounded p-2 min-h-[50px] sm:min-h-[60px] max-h-[100px] overflow-y-auto flex gap-2 flex-wrap justify-center" id="player1Captured"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalBackdrop" class="hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"></div>
+
+    <div id="winModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="bg-[#fff8e1] rounded-xl shadow-2xl p-8 max-w-sm w-full text-center border-4 border-stone-600">
+        <div id="winChar" class="text-6xl text-[#c62828] font-black mb-4">勝</div>
+        <h2 id="winTitle" class="text-2xl font-bold text-stone-800 mb-2">승리</h2>
+        <p id="winMessage" class="text-stone-600 mb-6">상대의 왕을 잡았습니다.</p>
+        <button onclick="resetGame()" class="w-full bg-stone-700 text-white py-3 rounded font-bold hover:bg-stone-800">다시하기</button>
+      </div>
+    </div>
+
+    <div id="rulebookModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 max-h-[80vh] overflow-y-auto">
+        <h2 class="text-xl font-bold mb-4 text-center">게임 규칙</h2>
+        <div class="space-y-4 text-sm text-stone-700" id="ruleContent"></div>
+        <button onclick="hideModals()" class="w-full mt-6 bg-stone-600 text-white py-3 rounded font-bold">닫기</button>
+      </div>
+    </div>
+
+    <div id="confirmHomeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full text-center">
+        <p class="text-stone-800 font-bold mb-6">메인으로 돌아가시겠습니까?</p>
+        <div class="flex gap-3">
+          <button onclick="exitToMenu()" class="flex-1 bg-red-600 text-white py-2 rounded font-bold">예</button>
+          <button onclick="hideModals()" class="flex-1 bg-stone-300 text-stone-800 py-2 rounded font-bold">아니오</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // =======================
+      // [1] 시스템 및 오디오
+      // =======================
+      let audioContext;
+
+      function initAudio() {
+        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      function playSound(type) {
+        if (!audioContext) return;
+        const t = audioContext.currentTime;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+
+        if (type === "move") {
+          // 딱! 소리
+          osc.type = "square";
+          osc.frequency.setValueAtTime(180, t);
+          osc.frequency.exponentialRampToValueAtTime(40, t + 0.08);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.linearRampToValueAtTime(0, t + 0.08);
+          osc.start(t);
+          osc.stop(t + 0.08);
+        } else if (type === "capture") {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(400, t);
+          osc.frequency.linearRampToValueAtTime(800, t + 0.1);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.linearRampToValueAtTime(0, t + 0.2);
+          osc.start(t);
+          osc.stop(t + 0.2);
+        } else if (type === "win") {
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(523, t);
+          osc.frequency.setValueAtTime(1046, t + 0.3);
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.linearRampToValueAtTime(0, t + 1.5);
+          osc.start(t);
+          osc.stop(t + 1.5);
+        }
+      }
+
+      // =======================
+      // [2] 게임 데이터
+      // =======================
+      const piecesInfo = {
+        king: {
+          text: "王",
+          name: "왕",
+          moves: [
+            [-1, -1],
+            [-1, 0],
+            [-1, 1],
+            [0, -1],
+            [0, 1],
+            [1, -1],
+            [1, 0],
+            [1, 1],
+          ],
+          size: "text-4xl",
+        },
+        jang: {
+          text: "將",
+          name: "장",
+          moves: [
+            [-1, 0],
+            [1, 0],
+            [0, -1],
+            [0, 1],
+          ],
+          size: "text-3xl",
+        },
+        sang: {
+          text: "相",
+          name: "상",
+          moves: [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1],
+          ],
+          size: "text-3xl",
+        },
+        ja: { text: "子", name: "자", moves: [[-1, 0]], size: "text-2xl" },
+        hou: {
+          text: "侯",
+          name: "후",
+          moves: [
+            [-1, -1],
+            [-1, 0],
+            [-1, 1],
+            [0, -1],
+            [0, 1],
+            [1, 0],
+          ],
+          size: "text-3xl",
+        },
+      };
+
+      let gameState = {
+        board: Array(12).fill(null),
+        currentPlayer: 1, // 1: 초(Green), 2: 한(Red)
+        selectedPos: null,
+        selectedCaptured: null,
+        captured: { 1: [], 2: [] },
+        gameOver: false,
+        pendingWin: null, // { player, pos } when king reached enemy end row and must survive one turn
+      };
+
+      function initGame() {
+        gameState.board = Array(12).fill(null);
+        gameState.currentPlayer = 1;
+        gameState.captured = { 1: [], 2: [] };
+        gameState.gameOver = false;
+        gameState.selectedPos = null;
+        gameState.selectedCaptured = null;
+        gameState.pendingWin = null;
+
+        // P2 (Red) - 상단
+        gameState.board[0] = { type: "jang", player: 2 };
+        gameState.board[1] = { type: "king", player: 2 };
+        gameState.board[2] = { type: "sang", player: 2 };
+        gameState.board[4] = { type: "ja", player: 2 };
+
+        // P1 (Green) - 하단
+        gameState.board[9] = { type: "sang", player: 1 };
+        gameState.board[10] = { type: "king", player: 1 };
+        gameState.board[11] = { type: "jang", player: 1 };
+        gameState.board[7] = { type: "ja", player: 1 };
+
+        renderBoard();
+        updateUI();
+      }
+
+      // =======================
+      // [3] 렌더링
+      // =======================
+      function renderBoard() {
+        const boardEl = document.getElementById("gameBoard");
+        boardEl.innerHTML = "";
+
+        for (let i = 0; i < 12; i++) {
+          const cell = document.createElement("div");
+          cell.className = "relative flex items-center justify-center cursor-pointer select-none transition-colors";
+          cell.onclick = () => handleCellClick(i);
+
+          const piece = gameState.board[i];
+          if (piece) {
+            const info = piecesInfo[piece.type];
+
+            const pieceEl = document.createElement("div");
+            let classes = `janggi-piece ${info.size} `;
+            classes += piece.player === 2 ? "player-han rotate-180" : "player-cho";
+
+            pieceEl.className = classes;
+            pieceEl.innerHTML = `<span>${info.text}</span>`;
+
+            // 선택 표시
+            if (gameState.selectedPos === i) {
+              cell.classList.add("selected");
+            }
+
+            // 이동 방향 표시기 추가
+            renderMoveIndicators(pieceEl, piece.type);
+
+            cell.appendChild(pieceEl);
+          }
+
+          // 이동 가능 힌트 (바닥 점)
+          if (isMoveValid(i)) {
+            cell.classList.add("valid-move");
+          }
+
+          boardEl.appendChild(cell);
+        }
+        renderCapturedArea();
+      }
+
+      function renderCapturedArea() {
+        ["player1Captured", "player2Captured"].forEach((id, idx) => {
+          const player = idx === 0 ? 1 : 2;
+          const container = document.getElementById(id);
+          container.innerHTML = "";
+
+          gameState.captured[player].forEach((pType, index) => {
+            const btn = document.createElement("div");
+            let info = piecesInfo[pType];
+            // 잡은 말 디자인: 심플한 사각형 타일
+            let cls = `w-10 h-10 sm:w-12 sm:h-12 bg-[#fff8e1] border-2 rounded shadow cursor-pointer flex items-center justify-center text-lg sm:text-xl font-black transition-all hover:-translate-y-1 hover:shadow-md `;
+
+            if (player === 1) cls += "text-[#00695c] border-[#004d40] ";
+            else cls += "text-[#c62828] border-[#b71c1c] ";
+
+            if (gameState.selectedCaptured && gameState.selectedCaptured.index === index && gameState.currentPlayer === player) {
+              cls += " ring-2 ring-yellow-500 bg-yellow-50 scale-110";
+            }
+
+            btn.className = cls;
+            btn.innerText = info.text;
+            btn.onclick = (e) => {
+              e.stopPropagation();
+              handleCapturedClick(pType, index, player);
+            };
+            container.appendChild(btn);
+          });
+        });
+      }
+
+      function updateUI() {
+        const p1Area = document.getElementById("p1-area");
+        const p2Area = document.getElementById("p2-area");
+        const s1 = document.getElementById("status1");
+        const s2 = document.getElementById("status2");
+
+        p1Area.className = "w-full lg:w-56 bg-[#efebe9] rounded-lg p-2 sm:p-3 shadow border-2 border-[#d7ccc8] transition-all duration-300";
+        p2Area.className = "w-full lg:w-56 bg-[#efebe9] rounded-lg p-2 sm:p-3 shadow border-2 border-[#d7ccc8] transition-all duration-300";
+
+        s1.innerText = "대기";
+        s1.className = "text-xs text-stone-400";
+        s2.innerText = "대기";
+        s2.className = "text-xs text-stone-400";
+
+        if (gameState.currentPlayer === 1) {
+          p1Area.classList.add("ring-4", "ring-[#00695c]", "bg-white", "shadow-lg");
+          p1Area.classList.remove("bg-[#efebe9]");
+          s1.innerText = "▶ 나의 차례";
+          s1.className = "text-xs text-[#00695c] font-bold";
+        } else {
+          p2Area.classList.add("ring-4", "ring-[#c62828]", "bg-white", "shadow-lg");
+          p2Area.classList.remove("bg-[#efebe9]");
+          s2.innerText = "▶ 상대 차례";
+          s2.className = "text-xs text-[#c62828] font-bold";
+        }
+      }
+
+      // =======================
+      // [4] 게임 로직
+      // =======================
+      function handleCellClick(pos) {
+        if (gameState.gameOver) return;
+        const target = gameState.board[pos];
+        const isMyPiece = target && target.player === gameState.currentPlayer;
+
+        // 1. 잡은 말 놓기
+        if (gameState.selectedCaptured) {
+          if (!target) tryDropPiece(pos);
+          else {
+            if (isMyPiece) selectPiece(pos);
+            else clearSelection();
+          }
+          return;
+        }
+
+        // 2. 보드 위 이동
+        if (gameState.selectedPos !== null) {
+          if (pos === gameState.selectedPos) {
+            clearSelection();
+            return;
+          }
+          if (checkMovePossible(gameState.selectedPos, pos)) {
+            movePiece(gameState.selectedPos, pos);
+            return;
+          }
+          if (isMyPiece) {
+            selectPiece(pos);
+            return;
+          }
+          clearSelection();
+          return;
+        }
+
+        // 3. 말 선택
+        if (isMyPiece) selectPiece(pos);
+      }
+
+      function handleCapturedClick(type, index, player) {
+        if (gameState.gameOver || player !== gameState.currentPlayer) return;
+        if (gameState.selectedCaptured && gameState.selectedCaptured.index === index) {
+          clearSelection();
+          return;
+        }
+        gameState.selectedPos = null;
+        gameState.selectedCaptured = { type, index };
+        renderBoard();
+      }
+
+      function selectPiece(pos) {
+        gameState.selectedCaptured = null;
+        gameState.selectedPos = pos;
+        playSound("move"); // 탭 소리
+        renderBoard();
+      }
+
+      function clearSelection() {
+        gameState.selectedPos = null;
+        gameState.selectedCaptured = null;
+        renderBoard();
+      }
+
+      function checkMovePossible(from, to) {
+        const piece = gameState.board[from];
+        if (!piece) return false;
+
+        const moves = piecesInfo[piece.type].moves;
+        const cx = from % 3;
+        const cy = Math.floor(from / 3);
+        const tx = to % 3;
+        const ty = Math.floor(to / 3);
+
+        for (let m of moves) {
+          let dx = m[1];
+          let dy = m[0];
+
+          // Player 2는 방향 반전
+          if (piece.player === 2) {
+            dx = -dx;
+            dy = -dy;
+          }
+
+          if (cx + dx === tx && cy + dy === ty) {
+            if (gameState.board[to] && gameState.board[to].player === piece.player) return false;
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function isMoveValid(pos) {
+        if (gameState.selectedPos !== null) return checkMovePossible(gameState.selectedPos, pos);
+        if (gameState.selectedCaptured) {
+          // 잡은 말을 놓을 수 있는 칸인지 확인 (비어있고, 상대 진영 첫 줄 금지)
+          if (gameState.board[pos]) return false;
+          const row = Math.floor(pos / 3);
+          // Player 1(초)은 맨 위(row 0)에, Player 2(한)는 맨 아래(연산상 row 3)에 놓을 수 없음
+          if (gameState.currentPlayer === 1 && row === 0) return false;
+          if (gameState.currentPlayer === 2 && row === 3) return false;
+          // 추가적으로 '자'는 위 규칙과 동일하게 막아두기 (tryDropPiece에서도 이중 검사)
+          if (gameState.selectedCaptured.type === "ja") {
+            if ((gameState.currentPlayer === 1 && row === 0) || (gameState.currentPlayer === 2 && row === 3)) return false;
+          }
+          return true;
+        }
+        return false;
+      }
+
+      function movePiece(from, to) {
+        const me = gameState.board[from];
+        const target = gameState.board[to];
+
+        if (target) {
+          const capturedType = target.type === "hou" ? "ja" : target.type;
+          gameState.captured[me.player].push(capturedType);
+          playSound("capture");
+
+          if (target.type === "king") {
+            endGame(me.player, "적장의 왕을 잡았습니다!");
+            return;
+          }
+        } else {
+          playSound("move");
+        }
+
+        gameState.board[to] = me;
+        gameState.board[from] = null;
+
+        // 승급 (자 -> 후)
+        const row = Math.floor(to / 3);
+        if (me.type === "ja") {
+          if ((me.player === 1 && row === 0) || (me.player === 2 && row === 3)) {
+            me.type = "hou";
+          }
+        }
+
+        // 왕의 적진 도달: 즉시 승리가 아닌 한 턴을 버티면 승리하는 규칙
+        if (me.type === "king") {
+          const reachedEnd = (me.player === 1 && row === 0) || (me.player === 2 && row === 3);
+          if (reachedEnd) {
+            gameState.pendingWin = { player: me.player, pos: to };
+          } else {
+            if (gameState.pendingWin && gameState.pendingWin.player === me.player) {
+              gameState.pendingWin = null;
+            }
+          }
+        }
+
+        changeTurn();
+      }
+
+      function tryDropPiece(pos) {
+        const p = gameState.selectedCaptured;
+        const row = Math.floor(pos / 3);
+
+        // 상대방 진영의 첫 줄에는 올릴 수 없음
+        if (gameState.currentPlayer === 1 && row === 0) {
+          // Player 1은 맨 위(상대방 진영)에 올릴 수 없음
+          return;
+        }
+        if (gameState.currentPlayer === 2 && row === 3) {
+          // Player 2는 맨 아래(상대방 진영)에 올릴 수 없음
+          return;
+        }
+
+        if (p.type === "ja") {
+          if ((gameState.currentPlayer === 1 && row === 0) || (gameState.currentPlayer === 2 && row === 3)) {
+            return;
+          }
+        }
+
+        gameState.board[pos] = { type: p.type, player: gameState.currentPlayer };
+        gameState.captured[gameState.currentPlayer].splice(p.index, 1);
+
+        playSound("move");
+        changeTurn();
+      }
+
+      function changeTurn() {
+        clearSelection();
+        gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+        // 만약 pendingWin이 설정되어 있고, 턴이 그 플레이어로 돌아왔다면 승리 처리
+        if (gameState.pendingWin && gameState.currentPlayer === gameState.pendingWin.player) {
+          const pos = gameState.pendingWin.pos;
+          const piece = gameState.board[pos];
+          if (piece && piece.type === "king" && piece.player === gameState.pendingWin.player) {
+            endGame(gameState.pendingWin.player, "왕이 적진에서 한 턴을 버텨 승리했습니다!");
+            return;
+          } else {
+            // 왕이 없거나 이동/포획되어 있으면 pendingWin 해제
+            gameState.pendingWin = null;
+          }
+        }
+
+        renderBoard();
+        updateUI();
+      }
+
+      function endGame(winner, msg) {
+        gameState.gameOver = true;
+        playSound("win");
+
+        const modal = document.getElementById("winModal");
+        document.getElementById("modalBackdrop").classList.remove("hidden");
+        modal.classList.remove("hidden");
+
+        const colorClass = winner === 1 ? "text-[#00695c]" : "text-[#c62828]";
+        const name = winner === 1 ? "초록색 사용자" : "빨간색 사용자";
+
+        document.getElementById("winChar").className = `text-6xl ${colorClass} font-black mb-4`;
+        document.getElementById("winTitle").innerHTML = `<span class="${colorClass}">${name}</span> 승리!`;
+        document.getElementById("winMessage").innerText = msg;
+      }
+
+      // =======================
+      // UI 버튼 함수 복원
+      // =======================
+      function startGame() {
+        initAudio();
+        document.getElementById("mainMenu").classList.add("hidden");
+        document.getElementById("gameScreen").classList.remove("hidden");
+        initGame();
+      }
+
+      function resetGame() {
+        hideModals();
+        initGame();
+      }
+
+      function exitToMenu() {
+        hideModals();
+        document.getElementById("gameScreen").classList.add("hidden");
+        document.getElementById("mainMenu").classList.remove("hidden");
+      }
+
+      function showHowToPlay() {
+        document.getElementById("ruleContent").innerHTML = `
+                <div class="space-y-3">
+                    <p class="font-bold text-lg">1. 기물 이동 방향</p>
+                    <p>장기말 위에 표시된 작은 점(화살표) 방향으로 1칸씩 이동할 수 있습니다.</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong class="text-red-700">王 (왕)</strong>: 모든 방향</li>
+                        <li><strong>將 (장)</strong>: 상하좌우 (십자)</li>
+                        <li><strong>相 (상)</strong>: 대각선 4방향 (X자)</li>
+                        <li><strong>子 (자)</strong>: 앞으로만 1칸</li>
+                    </ul>
+                    <hr class="border-stone-300">
+                    <p class="font-bold text-lg">2. 승리 조건</p>
+                    <ul class="list-disc pl-5">
+                        <li>상대의 <strong>왕(王)</strong>을 잡으면 승리</li>
+                        <li>나의 <strong>왕(王)</strong>이 상대 진영 끝줄에 도달하여 한 턴을 생존하면 승리</li>
+                    </ul>
+                </div>
+            `;
+        document.getElementById("modalBackdrop").classList.remove("hidden");
+        document.getElementById("rulebookModal").classList.remove("hidden");
+      }
+
+      // =======================
+      // 이동 방향 표시 함수
+      function renderMoveIndicators(container, type) {
+        const moves = piecesInfo[type].moves;
+        moves.forEach(([dy, dx]) => {
+          const dot = document.createElement("div");
+          dot.className = "move-indicator";
+
+          if (dy === -1 && dx === -1) dot.classList.add("pos-nw");
+          else if (dy === -1 && dx === 0) dot.classList.add("pos-n");
+          else if (dy === -1 && dx === 1) dot.classList.add("pos-ne");
+          else if (dy === 0 && dx === -1) dot.classList.add("pos-w");
+          else if (dy === 0 && dx === 1) dot.classList.add("pos-e");
+          else if (dy === 1 && dx === -1) dot.classList.add("pos-sw");
+          else if (dy === 1 && dx === 0) dot.classList.add("pos-s");
+          else if (dy === 1 && dx === 1) dot.classList.add("pos-se");
+
+          container.appendChild(dot);
+        });
+      }
+
+      function showConfirmHomeModal() {
+        document.getElementById("modalBackdrop").classList.remove("hidden");
+        document.getElementById("confirmHomeModal").classList.remove("hidden");
+      }
+
+      function hideModals() {
+        document.getElementById("modalBackdrop").classList.add("hidden");
+        document.querySelectorAll("#winModal, #rulebookModal, #confirmHomeModal").forEach((el) => el.classList.add("hidden"));
+      }
+    </script>
+  </body>
+</html>

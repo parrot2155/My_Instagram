@@ -1,0 +1,278 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #262626;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Step 1: 이미지 업로드 */
+.image-upload-area {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-placeholder {
+  text-align: center;
+  padding: 40px;
+}
+
+.upload-icon {
+  color: #262626;
+  margin-bottom: 16px;
+}
+
+.upload-placeholder p {
+  font-size: 22px;
+  font-weight: 300;
+  margin: 16px 0 24px;
+  color: #262626;
+}
+
+.select-image-btn {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.select-image-btn:hover {
+  background-color: #1877f2;
+}
+
+.image-preview-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.change-image-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.change-image-btn:hover {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Step 2: 내용 작성 */
+.modal-body.step2 {
+  display: flex;
+  flex-direction: row;
+  min-height: 500px;
+}
+
+.preview-section {
+  flex: 1.2;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.final-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.content-section {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.content-textarea {
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  padding: 12px;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  background-color: #ffffff;
+  color: #262626;
+  color-scheme: light;
+  box-sizing: border-box;
+}
+
+.content-textarea::placeholder {
+  color: #8e8e8e;
+}
+
+.location-input-container {
+  border-top: 1px solid #efefef;
+  padding-top: 16px;
+}
+
+.location-input {
+  width: 100%;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  padding: 10px 12px;
+  outline: none;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #262626;
+  color-scheme: light;
+  box-sizing: border-box;
+}
+
+.location-input::placeholder {
+  color: #8e8e8e;
+}
+
+/* Footer */
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #dbdbdb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.next-btn,
+.submit-btn,
+.back-btn {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.next-btn:disabled,
+.submit-btn:disabled {
+  background-color: #b2dffc;
+  cursor: not-allowed;
+}
+
+.next-btn:hover:not(:disabled),
+.submit-btn:hover:not(:disabled) {
+  background-color: #1877f2;
+}
+
+.footer-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.back-btn {
+  background-color: #dbdbdb;
+  color: #262626;
+}
+
+.back-btn:hover {
+  background-color: #c7c7c7;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .modal-body.step2 {
+    flex-direction: column;
+  }
+
+  .preview-section {
+    max-height: 50%;
+  }
+}

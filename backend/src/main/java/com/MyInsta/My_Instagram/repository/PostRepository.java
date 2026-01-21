@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("SELECT p FROM Post p JOIN FETCH p.user u")
+    @Query("SELECT p FROM Post p JOIN FETCH p.user u ORDER BY p.regDate DESC")
     List<Post> findAllWithUser();
 }
