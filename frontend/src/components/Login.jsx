@@ -51,7 +51,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-form">
-        <div className="logo">
+        <div className="logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
           <h1>Instagram</h1>
         </div>
         {error && <div className="error-message">{error}</div>}
