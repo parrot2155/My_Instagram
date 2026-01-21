@@ -1,0 +1,15 @@
+.navigation {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  background-color: white;
+  border-top: 1px solid #dbdbdb;
+  position: sticky;
+  bottom: 0;
+}
+
+.nav-icon {
+  font-size: 24px;
+  cursor: pointer;
+}

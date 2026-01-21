@@ -1,0 +1,48 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.0)
+
+2026-01-21T21:33:35.976+09:00  INFO 29508 --- [My_Instagram] [           main] c.M.My_Instagram.MyInstagramApplication  : Starting MyInstagramApplication v0.0.1-SNAPSHOT using Java 17 with PID 29508 (D:\work\myInsta\My_Instagram\backend\target\My_Instagram-0.0.1-SNAPSHOT.jar started by parro in D:\work\myInsta\My_Instagram\backend)
+2026-01-21T21:33:35.987+09:00  INFO 29508 --- [My_Instagram] [           main] c.M.My_Instagram.MyInstagramApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-01-21T21:33:36.955+09:00  INFO 29508 --- [My_Instagram] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-21T21:33:37.043+09:00  INFO 29508 --- [My_Instagram] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 76 ms. Found 1 JPA repository interface.
+2026-01-21T21:33:37.792+09:00  INFO 29508 --- [My_Instagram] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8090 (http)
+2026-01-21T21:33:37.815+09:00  INFO 29508 --- [My_Instagram] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-21T21:33:37.816+09:00  INFO 29508 --- [My_Instagram] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-21T21:33:37.851+09:00  INFO 29508 --- [My_Instagram] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1738 ms
+2026-01-21T21:33:38.186+09:00  INFO 29508 --- [My_Instagram] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-21T21:33:38.277+09:00  INFO 29508 --- [My_Instagram] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 7.1.8.Final
+2026-01-21T21:33:38.940+09:00  INFO 29508 --- [My_Instagram] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-21T21:33:38.987+09:00  INFO 29508 --- [My_Instagram] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-21T21:33:39.377+09:00  INFO 29508 --- [My_Instagram] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection oracle.jdbc.driver.T4CConnection@3722f39d
+2026-01-21T21:33:39.378+09:00  INFO 29508 --- [My_Instagram] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-21T21:33:39.631+09:00  WARN 29508 --- [My_Instagram] [           main] org.hibernate.orm.deprecation            : HHH90000025: OracleDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-21T21:33:39.663+09:00  WARN 29508 --- [My_Instagram] [           main] org.hibernate.orm.jdbc                   : HHH100123: Low default JDBC fetch size: 10 (consider setting 'hibernate.jdbc.fetch_size')
+2026-01-21T21:33:39.667+09:00  INFO 29508 --- [My_Instagram] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:oracle:thin:@localhost:1521:ORCL]
+	Database driver: Oracle JDBC driver
+	Database dialect: OracleDialect
+	Database version: 19.3
+	Default catalog/schema: undefined/MULTI
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: 10
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-21T21:33:40.524+09:00  INFO 29508 --- [My_Instagram] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-21T21:33:40.664+09:00  INFO 29508 --- [My_Instagram] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-21T21:33:40.783+09:00  INFO 29508 --- [My_Instagram] [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-21T21:33:40.991+09:00  WARN 29508 --- [My_Instagram] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-21T21:33:41.449+09:00  INFO 29508 --- [My_Instagram] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8090 (http) with context path '/'
+2026-01-21T21:33:41.461+09:00  INFO 29508 --- [My_Instagram] [           main] c.M.My_Instagram.MyInstagramApplication  : Started MyInstagramApplication in 6.324 seconds (process running for 7.068)
+2026-01-21T21:36:19.288+09:00  INFO 29508 --- [My_Instagram] [nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-21T21:36:19.289+09:00  INFO 29508 --- [My_Instagram] [nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-21T21:36:19.292+09:00  INFO 29508 --- [My_Instagram] [nio-8090-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+^C

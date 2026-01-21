@@ -1,0 +1,64 @@
+.feed {
+  flex: 1;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px 0;
+  color: #222;
+}
+
+.post {
+  background-color: white;
+  border: 1px solid #dbdbdb;
+  margin-bottom: 20px;
+}
+
+.post__header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.post__profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.post__image img {
+  width: 100%;
+  height: auto;
+}
+
+.post__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.post__left-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.post__likes {
+  padding: 0 10px;
+  font-weight: bold;
+  color: #222;
+}
+
+.post__caption {
+  padding: 0 10px 10px;
+  color: #222;
+}
