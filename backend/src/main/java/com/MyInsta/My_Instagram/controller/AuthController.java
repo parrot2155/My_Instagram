@@ -1,7 +1,9 @@
 package com.MyInsta.My_Instagram.controller;
 
+import com.MyInsta.My_Instagram.config.JwtUtil;
 import com.MyInsta.My_Instagram.entity.User;
 import com.MyInsta.My_Instagram.repository.UserRepository;
+import com.MyInsta.My_Instagram.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,12 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest) {
         String userid = loginRequest.getUserid();
@@ -31,17 +39,13 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        Optional<User> user = userRepository.findByUseridAndPassword(userid, password);
-
-        if (user.isPresent()) {
-            response.put("success", true);
-            response.put("message", "로그인 성공");
-            response.put("user", user.get());
+        // AuthService를 통한 로그인 처리
+        response = authService.login(userid, password);
+        
+        if ((Boolean) response.get("success")) {
             return ResponseEntity.ok(response);
         } else {
-            response.put("success", false);
-            response.put("message", "아이디 또는 비밀번호가 일치하지 않습니다.");
-            return ResponseEntity.ok(response);
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
@@ -120,23 +124,126 @@ public class AuthController {
             return ResponseEntity.badRequest().body(response);
         }
 
+        // 이메일 중복 검사
+        Optional<User> existingEmail = userRepository.findByEmail(email);
+        if (existingEmail.isPresent()) {
+            response.put("success", false);
+            response.put("message", "이미 사용 중인 이메일입니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
         // 새 사용자 생성
         User newUser = new User();
         newUser.setUsername(name);
         newUser.setUserid(userid);
-        newUser.setPassword(password); // 실제로는 암호화 필요
+        newUser.setPassword(password);
         newUser.setEmail(email);
         newUser.setNickname(nickname);
 
         try {
-            User savedUser = userRepository.save(newUser);
-            response.put("success", true);
-            response.put("message", "회원가입이 완료되었습니다.");
-            response.put("user", savedUser);
-            return ResponseEntity.ok(response);
+            response = authService.signup(newUser);
+            if ((Boolean) response.get("success")) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(response);
+            }
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "회원가입 처리 중 오류가 발생했습니다.");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    // 리프레시 토큰으로 액세스 토큰 재발급
+    @PostMapping("/refresh")
+    public ResponseEntity<Map<String, Object>> refreshToken(@RequestBody Map<String, String> request) {
+        String refreshToken = request.get("refreshToken");
+        
+        if (refreshToken == null || refreshToken.trim().isEmpty()) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "리프레시 토큰이 필요합니다.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        Map<String, Object> response = authService.refreshAccessToken(refreshToken);
+        
+        if ((Boolean) response.get("success")) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, Object>> logout(@RequestHeader("Authorization") String authHeader) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.put("success", false);
+                response.put("message", "유효하지 않은 토큰입니다.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            String token = authHeader.substring(7);
+            Long userNo = jwtUtil.extractUserNo(token);
+            
+            response = authService.logout(userNo);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "로그아웃 처리 중 오류가 발생했습니다.");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    // 현재 사용자 정보 조회
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.put("success", false);
+                response.put("message", "유효하지 않은 토큰입니다.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            String token = authHeader.substring(7);
+            
+            if (!jwtUtil.validateToken(token)) {
+                response.put("success", false);
+                response.put("message", "만료되거나 유효하지 않은 토큰입니다.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            Long userNo = jwtUtil.extractUserNo(token);
+            Optional<User> userOptional = userRepository.findById(userNo);
+            
+            if (userOptional.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            User user = userOptional.get();
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("userNo", user.getUserNo());
+            userInfo.put("userid", user.getUserid());
+            userInfo.put("username", user.getUsername());
+            userInfo.put("nickname", user.getNickname());
+            userInfo.put("email", user.getEmail());
+            userInfo.put("profileImg", user.getProfileImg());
+            userInfo.put("description", user.getDescription());
+            
+            response.put("success", true);
+            response.put("user", userInfo);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "사용자 정보 조회 중 오류가 발생했습니다.");
             return ResponseEntity.internalServerError().body(response);
         }
     }

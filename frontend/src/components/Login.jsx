@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./Login.css";
 
 const Login = () => {
@@ -8,6 +9,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -29,7 +31,12 @@ const Login = () => {
       const data = await response.json();
 
       if (data.success) {
-        // 로그인 성공
+        // 로그인 성공 - AuthContext에 저장
+        login(data.user, {
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken
+        });
+        
         console.log("로그인 성공:", data.user);
         navigate("/");
       } else {

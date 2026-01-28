@@ -54,6 +54,30 @@ public class PostController {
             System.out.println("location: " + location);
             System.out.println("image: " + (image != null ? image.getOriginalFilename() : "null"));
             
+            // 이미지 파일 타입 검증
+            String contentType = image.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return ResponseEntity.badRequest()
+                        .body(java.util.Map.of("error", "이미지 파일만 업로드할 수 있습니다.", 
+                                              "message", "허용되는 파일 형식: JPG, PNG, GIF, WEBP"));
+            }
+            
+            // 허용되는 이미지 타입 확인
+            List<String> allowedTypes = List.of("image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp");
+            if (!allowedTypes.contains(contentType.toLowerCase())) {
+                return ResponseEntity.badRequest()
+                        .body(java.util.Map.of("error", "지원하지 않는 이미지 형식입니다.", 
+                                              "message", "허용되는 파일 형식: JPG, PNG, GIF, WEBP"));
+            }
+            
+            // 파일 크기 제한 (10MB)
+            long maxSize = 10 * 1024 * 1024; // 10MB
+            if (image.getSize() > maxSize) {
+                return ResponseEntity.badRequest()
+                        .body(java.util.Map.of("error", "파일 크기가 너무 큽니다.", 
+                                              "message", "최대 10MB까지 업로드 가능합니다."));
+            }
+            
             // 사용자 조회
             User user = userRepository.findById(userNo)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다. userNo: " + userNo));

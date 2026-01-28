@@ -1,10 +1,23 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaHome, FaPaperPlane, FaSearch, FaCompass, FaPlay, FaHeart, FaPlusSquare, FaUser, FaCog } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 import "./Sidebar.css";
 import CreatePostModal from "./CreatePostModal";
 
 const Sidebar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCreatePost = () => {
+    if (!isAuthenticated) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="sidebar">
@@ -36,7 +49,7 @@ const Sidebar = () => {
           <FaHeart className="nav-icon" />
           <span>알림</span>
         </div>
-        <div className="nav-item" onClick={() => setIsModalOpen(true)}>
+        <div className="nav-item" onClick={handleCreatePost}>
           <FaPlusSquare className="nav-icon" />
           <span>만들기</span>
         </div>

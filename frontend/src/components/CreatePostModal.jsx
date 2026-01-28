@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import "./CreatePostModal.css";
 
 const CreatePostModal = ({ isOpen, onClose }) => {
+  const { user, isAuthenticated } = useAuth();
   const [step, setStep] = useState(1); // 1: 이미지 선택, 2: 내용 작성
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -12,6 +14,22 @@ const CreatePostModal = ({ isOpen, onClose }) => {
   const handleImageSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // 이미지 파일만 허용
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('이미지 파일만 업로드할 수 있습니다. (JPG, PNG, GIF, WEBP)');
+        e.target.value = ''; // input 초기화
+        return;
+      }
+
+      // 파일 크기 제한 (10MB)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('파일 크기는 10MB 이하여야 합니다.');
+        e.target.value = ''; // input 초기화
+        return;
+      }
+
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -35,14 +53,17 @@ const CreatePostModal = ({ isOpen, onClose }) => {
       return;
     }
 
+    if (!isAuthenticated || !user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // localStorage에서 사용자 정보 가져오기 (없으면 임시로 하드코딩)
-      const userNo = localStorage.getItem("userNo") || 1; // 임시: 1번 사용자
-
       console.log("=== 게시물 작성 요청 ===");
-      console.log("userNo:", userNo);
+      console.log("userNo:", user.userNo);
+      console.log("userid:", user.userid);
       console.log("content:", content);
       console.log("location:", location);
       console.log("image:", selectedImage);
@@ -51,10 +72,14 @@ const CreatePostModal = ({ isOpen, onClose }) => {
       formData.append("image", selectedImage);
       formData.append("content", content);
       formData.append("location", location);
-      formData.append("userNo", userNo);
+      formData.append("userNo", user.userNo);
 
+      const accessToken = localStorage.getItem("accessToken");
       const response = await fetch("http://localhost:8090/api/posts/create", {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+        },
         body: formData,
       });
 
@@ -100,7 +125,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
         </div>
 
         {step === 1 ? (
-          // Step 1: 이미지 선택
+          // 1: 이미지 선택
           <div className="modal-body">
             <div className="image-upload-area">
               {imagePreview ? (
@@ -127,7 +152,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
             </div>
           </div>
         ) : (
-          // Step 2: 내용 작성
+          // 2: 내용 작성
           <div className="modal-body step2">
             <div className="preview-section">
               <img src={imagePreview} alt="Preview" className="final-preview" />

@@ -62,3 +62,125 @@
 .login-button:hover {
   background-color: #007ad9;
 }
+
+/* 프로필 관련 스타일 */
+.profile-container {
+  position: relative;
+}
+
+.profile-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-circle:hover {
+  opacity: 0.8;
+}
+
+.profile-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: white;
+  border: 1px solid #dbdbdb;
+}
+
+.profile-initial {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #e1e1e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  border: 1px solid #dbdbdb;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 240px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.profile-menu-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+}
+
+.profile-menu-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-menu-avatar img,
+.profile-menu-avatar .profile-initial {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  border: 1px solid #dbdbdb;
+}
+
+.profile-menu-info {
+  flex: 1;
+}
+
+.profile-menu-nickname {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+}
+
+.profile-menu-userid {
+  font-size: 12px;
+  color: #8e8e8e;
+  margin-top: 2px;
+}
+
+.profile-menu-divider {
+  height: 1px;
+  background-color: #dbdbdb;
+  margin: 0;
+}
+
+.profile-menu-item {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #262626;
+  transition: background-color 0.2s;
+}
+
+.profile-menu-item:hover {
+  background-color: #fafafa;
+}
+
+.profile-menu-item:last-child {
+  color: #ed4956;
+  font-weight: 600;
+}
