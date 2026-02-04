@@ -1,0 +1,371 @@
+.post-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.post-modal-content {
+  position: relative;
+  background-color: white;
+  max-width: 90vw;
+  max-height: 90vh;
+  width: 1200px;
+  height: 700px;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: scaleIn 0.2s ease-in-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.post-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 1001;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.post-modal-close:hover {
+  opacity: 0.7;
+}
+
+.post-modal-body {
+  display: flex;
+  height: 100%;
+}
+
+/* 좌측: 이미지 영역 */
+.post-modal-image-section {
+  flex: 1.2;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.post-modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 우측: 정보 영역 */
+.post-modal-info-section {
+  flex: 0.8;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  max-width: 500px;
+}
+
+/* 헤더: 사용자 정보 */
+.post-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #efefef;
+}
+
+.post-modal-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-modal-user-avatar,
+.post-modal-user-avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-modal-user-avatar-placeholder {
+  background-color: #e1e1e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.post-modal-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-modal-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+}
+
+.post-modal-location {
+  font-size: 12px;
+  color: #262626;
+}
+
+.post-modal-menu-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  color: #262626;
+}
+
+.post-modal-menu-button:hover {
+  opacity: 0.7;
+}
+
+/* 본문: 게시물 내용 및 댓글 */
+.post-modal-content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  border-bottom: 1px solid #efefef;
+}
+
+.post-modal-caption {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.post-modal-caption-avatar,
+.post-modal-caption-avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.post-modal-caption-avatar-placeholder {
+  background-color: #e1e1e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.post-modal-caption-text {
+  flex: 1;
+}
+
+.post-modal-caption-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  margin-right: 6px;
+}
+
+.post-modal-caption-date {
+  font-size: 12px;
+  color: #8e8e8e;
+  margin-top: 8px;
+}
+
+.post-modal-comments {
+  margin-top: 16px;
+}
+
+.post-modal-no-comments {
+  text-align: center;
+  color: #8e8e8e;
+  font-size: 14px;
+  padding: 20px;
+}
+
+/* 푸터: 액션 버튼 및 댓글 입력 */
+.post-modal-footer {
+  padding: 0 16px 16px;
+  background-color: white;
+}
+
+.post-modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.post-modal-action-buttons {
+  display: flex;
+  gap: 16px;
+}
+
+.post-modal-action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  color: #262626;
+  transition: opacity 0.2s;
+}
+
+.post-modal-action-button:hover {
+  opacity: 0.7;
+}
+
+.post-modal-action-button.liked svg {
+  animation: likeAnimation 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes likeAnimation {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.3);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.post-modal-likes {
+  padding: 8px 0;
+}
+
+.post-modal-likes-count {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+}
+
+.post-modal-timestamp {
+  font-size: 10px;
+  color: #8e8e8e;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #efefef;
+}
+
+/* 댓글 입력 */
+.post-modal-comment-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.post-modal-comment-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+  color: #262626;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  max-height: 80px;
+}
+
+.post-modal-comment-input::placeholder {
+  color: #8e8e8e;
+}
+
+.post-modal-comment-submit {
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.post-modal-comment-submit:disabled {
+  color: #b3d9ff;
+  cursor: default;
+  opacity: 0.3;
+}
+
+.post-modal-comment-submit:not(:disabled):hover {
+  color: #007ad9;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .post-modal-content {
+    width: 95vw;
+    height: 85vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .post-modal-content {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .post-modal-body {
+    flex-direction: column;
+  }
+
+  .post-modal-image-section {
+    flex: 1;
+    max-height: 60%;
+  }
+
+  .post-modal-info-section {
+    flex: 1;
+    max-width: 100%;
+    max-height: 40%;
+  }
+
+  .post-modal-content-area {
+    max-height: 200px;
+  }
+}

@@ -4,6 +4,10 @@ import com.MyInsta.My_Instagram.entity.Post;
 import com.MyInsta.My_Instagram.entity.User;
 import com.MyInsta.My_Instagram.repository.PostRepository;
 import com.MyInsta.My_Instagram.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +42,42 @@ public class PostController {
     @GetMapping("/posts")
     public List<Post> getPosts() {
         return postRepository.findAllWithUser();
+    }
+    
+    @GetMapping("/posts/pageable")
+    public ResponseEntity<?> getPostsPageable(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
+            Page<Post> postsPage = postRepository.findAllWithUserPageable(pageable);
+            
+            return ResponseEntity.ok(java.util.Map.of(
+                "content", postsPage.getContent(),
+                "currentPage", postsPage.getNumber(),
+                "totalPages", postsPage.getTotalPages(),
+                "totalElements", postsPage.getTotalElements(),
+                "hasNext", postsPage.hasNext()
+            ));
+        } catch (Exception e) {
+            System.err.println("게시물 페이징 조회 오류: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .body(java.util.Map.of("error", "게시물 조회 중 오류가 발생했습니다.", "message", e.getMessage()));
+        }
+    }
+    
+    @GetMapping("/posts/user/{userid}")
+    public ResponseEntity<?> getPostsByUser(@PathVariable String userid) {
+        try {
+            List<Post> posts = postRepository.findByUserUserid(userid);
+            return ResponseEntity.ok(posts);
+        } catch (Exception e) {
+            System.err.println("게시물 조회 오류: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .body(java.util.Map.of("error", "게시물 조회 중 오류가 발생했습니다.", "message", e.getMessage()));
+        }
     }
 
     @PostMapping("/posts/create")
