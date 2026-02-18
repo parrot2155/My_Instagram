@@ -279,6 +279,11 @@
   font-weight: 600;
   font-size: 14px;
   color: #262626;
+  transition: color 0.2s;
+}
+
+.post-modal-likes-count:hover {
+  color: #8e8e8e;
 }
 
 .post-modal-timestamp {

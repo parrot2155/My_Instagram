@@ -247,4 +247,38 @@ public class AuthController {
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
+    // userid로 사용자 정보 조회
+    @GetMapping("/user/{userid}")
+    public ResponseEntity<Map<String, Object>> getUserByUserid(@PathVariable String userid) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Optional<User> userOptional = userRepository.findByUserid(userid);
+            
+            if (userOptional.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "사용자를 찾을 수 없습니다.");
+                return ResponseEntity.status(404).body(response);
+            }
+
+            User user = userOptional.get();
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("userNo", user.getUserNo());
+            userInfo.put("userid", user.getUserid());
+            userInfo.put("username", user.getUsername());
+            userInfo.put("nickname", user.getNickname());
+            userInfo.put("email", user.getEmail());
+            userInfo.put("profileImg", user.getProfileImg());
+            userInfo.put("description", user.getDescription());
+            
+            response.put("success", true);
+            response.put("user", userInfo);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "사용자 정보 조회 중 오류가 발생했습니다.");
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
 }

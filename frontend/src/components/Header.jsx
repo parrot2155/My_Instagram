@@ -11,7 +11,7 @@ const Header = () => {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    console.log('[Header] user 상태:', user);
+    console.log("[Header] user 상태:", user);
   }, [user]);
 
   useEffect(() => {
@@ -60,30 +60,17 @@ const Header = () => {
         <FaPlusSquare className="icon" />
         <FaCompass className="icon" />
         <FaHeart className="icon" />
-        
+
         {user ? (
           <div className="profile-container" ref={menuRef}>
-            <div 
-              className="profile-circle" 
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-            >
-              {user.profileImg ? (
-                <img src={user.profileImg} alt="프로필" className="profile-image" />
-              ) : (
-                <span className="profile-initial">{getProfileInitial()}</span>
-              )}
+            <div className="profile-circle" onClick={() => setShowProfileMenu(!showProfileMenu)}>
+              {user.profileImg ? <img src={user.profileImg} alt="프로필" className="profile-image" /> : <span className="profile-initial">{getProfileInitial()}</span>}
             </div>
-            
+
             {showProfileMenu && (
               <div className="profile-menu">
                 <div className="profile-menu-header">
-                  <div className="profile-menu-avatar">
-                    {user.profileImg ? (
-                      <img src={user.profileImg} alt="프로필" />
-                    ) : (
-                      <span className="profile-initial">{getProfileInitial()}</span>
-                    )}
-                  </div>
+                  <div className="profile-menu-avatar">{user.profileImg ? <img src={user.profileImg} alt="프로필" /> : <span className="profile-initial">{getProfileInitial()}</span>}</div>
                   <div className="profile-menu-info">
                     <div className="profile-menu-nickname">{user.nickname}</div>
                     <div className="profile-menu-userid">@{user.userid}</div>

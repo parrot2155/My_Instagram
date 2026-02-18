@@ -58,6 +58,15 @@
   color: #222;
 }
 
+.post__likes-text {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.post__likes-text:hover {
+  color: #8e8e8e;
+}
+
 .post__caption {
   padding: 0 10px 10px;
   color: #222;

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import LikesModal from "./LikesModal";
 import "./PostModal.css";
 
 const PostModal = ({ post, onClose, onLikeUpdate }) => {
   const [liked, setLiked] = useState(false);
   const [localLikeCount, setLocalLikeCount] = useState(post?.likeCount || 0);
+  const [showLikesModal, setShowLikesModal] = useState(false);
 
   if (!post) return null;
 
@@ -170,7 +172,17 @@ const PostModal = ({ post, onClose, onLikeUpdate }) => {
               </div>
 
               <div className="post-modal-likes">
-                <span className="post-modal-likes-count">좋아요 {localLikeCount}개</span>
+                <span
+                  className="post-modal-likes-count"
+                  onClick={() => {
+                    if (localLikeCount > 0) {
+                      setShowLikesModal(true);
+                    }
+                  }}
+                  style={{ cursor: localLikeCount > 0 ? "pointer" : "default" }}
+                >
+                  좋아요 {localLikeCount}개
+                </span>
               </div>
 
               <div className="post-modal-timestamp">{formatDate(post.regDate)}</div>
@@ -186,6 +198,9 @@ const PostModal = ({ post, onClose, onLikeUpdate }) => {
           </div>
         </div>
       </div>
+
+      {/* 좋아요 모달 */}
+      {showLikesModal && <LikesModal postId={post.postId} onClose={() => setShowLikesModal(false)} />}
     </div>
   );
 };

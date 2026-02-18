@@ -111,4 +111,33 @@ public class LikeController {
                     .body(Map.of("error", "좋아요 상태 확인 중 오류가 발생했습니다.", "message", e.getMessage()));
         }
     }
+
+    // 특정 게시물에 좋아요 누른 사용자 목록 조회
+    @GetMapping("/post/{postId}/users")
+    public ResponseEntity<?> getPostLikeUsers(@PathVariable Long postId) {
+        try {
+            List<PostLike> postLikes = postLikeRepository.findByPostIdWithUser(postId);
+            
+            // User 정보만 추출하여 DTO 형태로 변환
+            List<Map<String, Object>> users = postLikes.stream()
+                    .map(pl -> {
+                        Map<String, Object> userInfo = new HashMap<>();
+                        userInfo.put("userNo", pl.getUser().getUserNo());
+                        userInfo.put("userid", pl.getUser().getUserid());
+                        userInfo.put("username", pl.getUser().getUsername());
+                        userInfo.put("nickname", pl.getUser().getNickname());
+                        userInfo.put("profileImg", pl.getUser().getProfileImg());
+                        userInfo.put("likedAt", pl.getRegDate());
+                        return userInfo;
+                    })
+                    .toList();
+            
+            return ResponseEntity.ok(Map.of("users", users, "total", users.size()));
+        } catch (Exception e) {
+            System.err.println("좋아요 사용자 목록 조회 오류: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500)
+                    .body(Map.of("error", "좋아요 사용자 목록 조회 중 오류가 발생했습니다.", "message", e.getMessage()));
+        }
+    }
 }

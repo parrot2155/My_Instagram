@@ -106,6 +106,22 @@
   background-color: #007ad9;
 }
 
+.profile-following-button {
+  padding: 8px 16px;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  background-color: #efefef;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #262626;
+}
+
+.profile-following-button:hover {
+  background-color: #dbdbdb;
+}
+
 .profile-settings-button {
   padding: 8px;
   border: none;
@@ -345,4 +361,97 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 3px;
   }
+}
+
+/* 언팔로우 확인 모달 */
+.unfollow-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.unfollow-modal {
+  background-color: white;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+.unfollow-modal-content {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.unfollow-modal-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.unfollow-modal-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.unfollow-modal-avatar-placeholder {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #dbdbdb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #262626;
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.unfollow-modal-text {
+  margin: 0;
+  font-size: 14px;
+  color: #262626;
+  line-height: 18px;
+}
+
+.unfollow-modal-confirm,
+.unfollow-modal-cancel {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-top: 1px solid #dbdbdb;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.unfollow-modal-confirm {
+  color: #ed4956;
+  font-weight: 700;
+}
+
+.unfollow-modal-confirm:hover {
+  background-color: #fafafa;
+}
+
+.unfollow-modal-cancel:hover {
+  background-color: #fafafa;
 }

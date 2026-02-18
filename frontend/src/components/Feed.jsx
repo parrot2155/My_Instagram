@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaHeart, FaComment, FaPaperPlane, FaBookmark } from "react-icons/fa";
+import LikesModal from "./LikesModal";
 import "./Feed.css";
 
 const Feed = () => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,6 +13,8 @@ const Feed = () => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [likedPosts, setLikedPosts] = useState(new Set());
+  const [showLikesModal, setShowLikesModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
 
   const observerTarget = useRef(null);
   const observer = useRef(null);
@@ -173,7 +178,7 @@ const Feed = () => {
         return (
           <div key={post.id} className="post">
             <div className="post__header">
-              <div className="post__profile">
+              <div className="post__profile" onClick={() => navigate(`/profile/${post.userid}`)} style={{ cursor: "pointer" }}>
                 <div className="profile-pic">{post.username[0].toUpperCase()}</div>
                 <span>{post.username}</span>
               </div>
@@ -202,7 +207,15 @@ const Feed = () => {
             </div>
             {post.likes > 0 && (
               <div className="post__likes">
-                <span>좋아요 {post.likes}개</span>
+                <span
+                  className="post__likes-text"
+                  onClick={() => {
+                    setSelectedPostId(post.id);
+                    setShowLikesModal(true);
+                  }}
+                >
+                  좋아요 {post.likes}개
+                </span>
               </div>
             )}
             <div className="post__caption">
@@ -229,6 +242,17 @@ const Feed = () => {
       )}
 
       {!hasMore && posts.length > 0 && <div className="feed-end-message">모든 게시물을 불러왔습니다.</div>}
+
+      {/* 좋아요 모달 */}
+      {showLikesModal && selectedPostId && (
+        <LikesModal
+          postId={selectedPostId}
+          onClose={() => {
+            setShowLikesModal(false);
+            setSelectedPostId(null);
+          }}
+        />
+      )}
     </div>
   );
 };

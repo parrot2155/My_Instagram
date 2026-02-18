@@ -15,18 +15,18 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     const file = e.target.files[0];
     if (file) {
       // 이미지 파일만 허용
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
       if (!allowedTypes.includes(file.type)) {
-        alert('이미지 파일만 업로드할 수 있습니다. (JPG, PNG, GIF, WEBP)');
-        e.target.value = ''; // input 초기화
+        alert("이미지 파일만 업로드할 수 있습니다. (JPG, PNG, GIF, WEBP)");
+        e.target.value = ""; // input 초기화
         return;
       }
 
       // 파일 크기 제한 (10MB)
       const maxSize = 10 * 1024 * 1024; // 10MB
       if (file.size > maxSize) {
-        alert('파일 크기는 10MB 이하여야 합니다.');
-        e.target.value = ''; // input 초기화
+        alert("파일 크기는 10MB 이하여야 합니다.");
+        e.target.value = ""; // input 초기화
         return;
       }
 
@@ -78,7 +78,7 @@ const CreatePostModal = ({ isOpen, onClose }) => {
       const response = await fetch("http://localhost:8090/api/posts/create", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: formData,
       });

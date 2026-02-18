@@ -13,26 +13,42 @@ const Profile = () => {
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [activeTab, setActiveTab] = useState("posts"); // posts, saved
   const [loading, setLoading] = useState(true);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showUnfollowModal, setShowUnfollowModal] = useState(false);
 
   useEffect(() => {
     loadUserProfile();
     loadUserPosts();
   }, [userid]);
 
+  // user가 설정된 후 팔로우 정보 로드
+  useEffect(() => {
+    if (user && user.userNo) {
+      loadFollowCounts();
+      checkFollowStatus();
+    }
+  }, [user, isOwnProfile]);
+
   const loadUserProfile = async () => {
     try {
+      setLoading(true);
       const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-      setIsOwnProfile(currentUser.userid === userid);
-
-      // 임시로 로컬스토리지에서 가져오기 (나중에 API로 변경)
-      if (currentUser.userid === userid) {
-        setUser(currentUser);
+      
+      // userid로 사용자 정보 조회
+      const response = await axios.get(`http://localhost:8090/api/auth/user/${userid}`);
+      
+      if (response.data.success) {
+        const fetchedUser = response.data.user;
+        setUser(fetchedUser);
+        setIsOwnProfile(currentUser.userid === fetchedUser.userid);
       } else {
-        // TODO: API를 통해 다른 사용자 프로필 가져오기
-        setUser(currentUser);
+        setUser(null);
       }
     } catch (error) {
       console.error("프로필 로딩 오류:", error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -46,6 +62,70 @@ const Profile = () => {
     } catch (error) {
       console.error("게시물 로딩 오류:", error);
       setPosts([]);
+    }
+  };
+
+  // 팔로우 카운트 로딩
+  const loadFollowCounts = async () => {
+    if (!user || !user.userNo) return;
+    
+    try {
+      const response = await axios.get(`http://localhost:8090/api/follows/counts/${user.userNo}`);
+      setFollowerCount(response.data.followerCount);
+      setFollowingCount(response.data.followingCount);
+    } catch (error) {
+      console.error("팔로우 수 로딩 오류:", error);
+    }
+  };
+
+  // 팔로우 상태 확인
+  const checkFollowStatus = async () => {
+    if (!user || !user.userNo || isOwnProfile) return;
+    
+    try {
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+      if (!currentUser.userNo) return;
+
+      const response = await axios.get(`http://localhost:8090/api/follows/status?followerUserNo=${currentUser.userNo}&followingUserNo=${user.userNo}`);
+      setIsFollowing(response.data.isFollowing);
+    } catch (error) {
+      console.error("팔로우 상태 확인 오류:", error);
+    }
+  };
+
+  // 팔로우 핸들러
+  const handleFollow = async () => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+      if (!currentUser.userNo) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+
+      const response = await axios.post(`http://localhost:8090/api/follows/follow?followerUserNo=${currentUser.userNo}&followingUserNo=${user.userNo}`);
+
+      setIsFollowing(true);
+      setFollowerCount(response.data.followerCount);
+    } catch (error) {
+      console.error("팔로우 오류:", error);
+      alert("팔로우 처리 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 언팔로우 핸들러
+  const handleUnfollow = async () => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+      if (!currentUser.userNo) return;
+
+      const response = await axios.post(`http://localhost:8090/api/follows/unfollow?followerUserNo=${currentUser.userNo}&followingUserNo=${user.userNo}`);
+
+      setIsFollowing(false);
+      setFollowerCount(response.data.followerCount);
+      setShowUnfollowModal(false);
+    } catch (error) {
+      console.error("언팔로우 오류:", error);
+      alert("언팔로우 처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -100,7 +180,15 @@ const Profile = () => {
               </div>
             ) : (
               <div className="profile-actions">
-                <button className="profile-follow-button">팔로우</button>
+                {isFollowing ? (
+                  <button className="profile-following-button" onClick={() => setShowUnfollowModal(true)}>
+                    팔로우 중
+                  </button>
+                ) : (
+                  <button className="profile-follow-button" onClick={handleFollow}>
+                    팔로우
+                  </button>
+                )}
                 <button className="profile-message-button">메시지</button>
               </div>
             )}
@@ -111,12 +199,12 @@ const Profile = () => {
               <span className="profile-stat-count">{posts.length}</span>
               <span className="profile-stat-label">게시물</span>
             </div>
-            <div className="profile-stat">
-              <span className="profile-stat-count">0</span>
+            <div className="profile-stat" style={{ cursor: "pointer" }}>
+              <span className="profile-stat-count">{followerCount}</span>
               <span className="profile-stat-label">팔로워</span>
             </div>
-            <div className="profile-stat">
-              <span className="profile-stat-count">0</span>
+            <div className="profile-stat" style={{ cursor: "pointer" }}>
+              <span className="profile-stat-count">{followingCount}</span>
               <span className="profile-stat-label">팔로잉</span>
             </div>
           </div>
@@ -197,6 +285,24 @@ const Profile = () => {
 
       {/* 게시물 상세 모달 */}
       {selectedPost && <PostModal post={selectedPost} onClose={() => setSelectedPost(null)} onLikeUpdate={handleLikeUpdate} />}
+
+      {/* 언팔로우 확인 모달 */}
+      {showUnfollowModal && (
+        <div className="unfollow-modal-overlay" onClick={() => setShowUnfollowModal(false)}>
+          <div className="unfollow-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="unfollow-modal-content">
+              <div className="unfollow-modal-avatar">{user.profileImg ? <img src={user.profileImg} alt={user.username} /> : <div className="unfollow-modal-avatar-placeholder">{getProfileInitial()}</div>}</div>
+              <p className="unfollow-modal-text">{user.nickname || user.username}님을 언팔로우하시겠습니까?</p>
+            </div>
+            <button className="unfollow-modal-confirm" onClick={handleUnfollow}>
+              언팔로우
+            </button>
+            <button className="unfollow-modal-cancel" onClick={() => setShowUnfollowModal(false)}>
+              취소
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -34,9 +34,9 @@ const Login = () => {
         // 로그인 성공 - AuthContext에 저장
         login(data.user, {
           accessToken: data.accessToken,
-          refreshToken: data.refreshToken
+          refreshToken: data.refreshToken,
         });
-        
+
         console.log("로그인 성공:", data.user);
         navigate("/");
       } else {
